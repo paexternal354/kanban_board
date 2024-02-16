@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Kanban Board</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <h2 class="mt-4 mb-4">Kanban Board</h2>
+
+        <div class="input-group mb-3">
+            <input type="text" id="newTask" class="form-control" placeholder="New task">
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button" onclick="addTask()">Add Task</button>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4">
+                <h4>To Do</h4>
+                <div id="todoList" class="list-group" ondrop="drop(event)" ondragover="allowDrop(event)">
+                    <!-- Tasks will go here -->
+                </div>
+            </div>
+            <div class="col-md-4">
+                <h4>In Progress</h4>
+                <div id="inProgressList" class="list-group" ondrop="drop(event)" ondragover="allowDrop(event)">
+                    <!-- Tasks will go here -->
+                </div>
+            </div>
+            <div class="col-md-4">
+                <h4>Done</h4>
+                <div id="doneList" class="list-group" ondrop="drop(event)" ondragover="allowDrop(event)">
+                    <!-- Tasks will go here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function allowDrop(ev) {
+            ev.preventDefault();
+        }
+
+        function drag(ev) {
+            console.log("drag")
+            ev.dataTransfer.setData("text", ev.target.id);
+        }
+
+        function drop(ev) {
+            console.log("Drop event triggered");
+            ev.preventDefault();
+            var data = ev.dataTransfer.getData("text");
+            var target = ev.target;
+
+            while (target && !target.classList.contains('list-group')) {
+                target = target.parentNode;
+            }
+
+            if (target && target.classList.contains('list-group')) {
+                target.appendChild(document.getElementById(data));
+            }
+        }
+
+        function addTask() {
+            var taskTitle = document.getElementById('newTask').value;
+            var uniqueId = 'task' + new Date().getTime(); // Generate a unique ID for each task
+
+            if (taskTitle) {
+                var taskElement = '<div id="' + uniqueId + '" class="list-group-item list-group-item-action" draggable="true" ondragstart="drag(event)">' + taskTitle + ' <button onclick="deleteTask(\'' + uniqueId + '\')" class="btn btn-danger btn-sm float-right">Delete</button></div>';
+
+                var todoList = document.getElementById('todoList');
+                todoList.innerHTML += taskElement;
+
+                // Clear the input field
+                document.getElementById('newTask').value = '';
+            }
+        }
+
+        function deleteTask(taskId) {
+            var taskElement = document.getElementById(taskId);
+            taskElement.parentNode.removeChild(taskElement);
+        }
+    </script>
+</body>
+
+</html>
